@@ -40,17 +40,15 @@ ba::windows::stream_handle in(io_service);
 
 bp::child start_child() 
 { 
-    std::string exec = "bjam.exe"; 
-
     std::vector<std::string> args; 
-    args.push_back("bjam.exe"); 
-    args.push_back("--version"); 
+    args.push_back("/bin/ls");
+    args.push_back("-l");
 
     bp::context ctx; 
     ctx.stdout_behavior = bp::capture_stream(); 
     ctx.environment = bp::self::get_environment(); 
 
-    return bp::launch(exec, args, ctx); 
+    return bp::launch(args[0], args, ctx);
 } 
 
 void end_read(const boost::system::error_code &ec, std::size_t bytes_transferred); 
@@ -67,14 +65,14 @@ void end_read(const boost::system::error_code &ec, std::size_t bytes_transferred
     { 
         std::cout << std::string(buffer.data(), bytes_transferred) << std::flush; 
         begin_read(); 
-    } 
+    }
 } 
 
 int main() 
 { 
     bp::child c = start_child(); 
 
-    bp::pistream &is = c.get_stdout(); 
+    bp::pistream &is = c.get_stdout();
     in.assign(is.handle().release()); 
 
     begin_read(); 
